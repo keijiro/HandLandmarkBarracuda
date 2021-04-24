@@ -9,7 +9,7 @@ Shader "Hidden/MediaPipe/HandLandmark/Visualizer"
     float4 Vertex(uint vid : SV_VertexID,
                   uint iid : SV_InstanceID) : SV_Position
     {
-        float2 p = _Vertices[iid] - 0.5;
+        float2 p = _Vertices[iid + 1] - 0.5;
 
         const float size = 0.02;
         p.x += size * lerp(-1, 1, vid == 1) * (vid < 2);

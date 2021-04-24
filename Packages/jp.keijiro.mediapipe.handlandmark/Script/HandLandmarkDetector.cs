@@ -1,42 +1,13 @@
-using System.Collections.Generic;
 using Unity.Barracuda;
 using UnityEngine;
 
 namespace MediaPipe.HandLandmark {
 
 //
-// Hand landmark detector class
+// Implementation of the hand landmark detector class
 //
-public sealed class HandLandmarkDetector : System.IDisposable
+public sealed partial class HandLandmarkDetector : System.IDisposable
 {
-    #region Public accessors
-
-    public const int VertexCount = 21;
-
-    public ComputeBuffer VertexBuffer
-      => _postBuffer;
-
-    public IEnumerable<Vector4> VertexArray
-      => _postRead ? _postReadCache : UpdatePostReadCache();
-
-    #endregion
-
-    #region Public methods
-
-    public HandLandmarkDetector(ResourceSet resources)
-    {
-        _resources = resources;
-        AllocateObjects();
-    }
-
-    public void Dispose()
-      => DeallocateObjects();
-
-    public void ProcessImage(Texture image)
-      => RunModel(image);
-
-    #endregion
-
     #region Compile-time constants
 
     // Input image size (defined by the model)
@@ -55,7 +26,7 @@ public sealed class HandLandmarkDetector : System.IDisposable
     {
         var model = ModelLoader.Load(_resources.model);
         _preBuffer = new ComputeBuffer(ImageSize * ImageSize * 3, sizeof(float));
-        _postBuffer = new ComputeBuffer(VertexCount, sizeof(float) * 4);
+        _postBuffer = new ComputeBuffer(VertexCount + 1, sizeof(float) * 4);
         _worker = model.CreateWorker();
     }
 
@@ -89,11 +60,11 @@ public sealed class HandLandmarkDetector : System.IDisposable
 
         // Postprocessing
         var post = _resources.postprocess;
-        var landmarkRT = _worker.CopyOutputToTempRT("Identity", 3, VertexCount);
-        post.SetTexture(0, "_Landmarks", landmarkRT);
-        post.SetBuffer(0, "_Vertices", _postBuffer);
+        post.SetBuffer(0, "_Landmark", _worker.PeekOutputBuffer("Identity"));
+        post.SetBuffer(0, "_Score", _worker.PeekOutputBuffer("Identity_1"));
+        post.SetBuffer(0, "_Handedness", _worker.PeekOutputBuffer("Identity_2"));
+        post.SetBuffer(0, "_Output", _postBuffer);
         post.Dispatch(0, 1, 1, 1);
-        RenderTexture.ReleaseTemporary(landmarkRT);
 
         // Read cache invalidation
         _postRead = false;
@@ -103,12 +74,15 @@ public sealed class HandLandmarkDetector : System.IDisposable
 
     #region GPU to CPU readback
 
-    Vector4[] _postReadCache = new Vector4[VertexCount];
+    Vector4[] _postReadCache = new Vector4[VertexCount + 1];
     bool _postRead;
+
+    Vector4[] PostReadCache
+      => _postRead ? _postReadCache : UpdatePostReadCache();
 
     Vector4[] UpdatePostReadCache()
     {
-        _postBuffer.GetData(_postReadCache, 0, 0, VertexCount);
+        _postBuffer.GetData(_postReadCache, 0, 0, VertexCount + 1);
         _postRead = true;
         return _postReadCache;
     }

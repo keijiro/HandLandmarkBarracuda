@@ -11,16 +11,28 @@
 #define VERTEX_COUNT 21
 
 // Input
-Texture2D<float> _Landmarks;
+StructuredBuffer<float> _Landmark;
+StructuredBuffer<float> _Score;
+StructuredBuffer<float> _Handedness;
 
 // Output
-RWStructuredBuffer<float4> _Vertices;
+RWStructuredBuffer<float4> _Output;
 
-[numthreads(VERTEX_COUNT, 1, 1)]
+[numthreads(VERTEX_COUNT + 1, 1, 1)]
 void Postprocess(uint id : SV_DispatchThreadID)
 {
-    float x =     _Landmarks[uint2(0, id)] / IMAGE_SIZE;
-    float y = 1 - _Landmarks[uint2(1, id)] / IMAGE_SIZE;
-    float z =     _Landmarks[uint2(2, id)] / IMAGE_SIZE;
-    _Vertices[VERTEX_COUNT - 1 - id] = float4(x, y, z, 1);
+    if (id == 0)
+    {
+        float score = _Score[0];
+        float handedness = _Handedness[0];
+        _Output[0] = float4(score, handedness, 0, 0);
+    }
+    else
+    {
+        uint offs = (id - 1) * 3;
+        float x =     _Landmark[offs + 0] / IMAGE_SIZE;
+        float y = 1 - _Landmark[offs + 1] / IMAGE_SIZE;
+        float z =     _Landmark[offs + 2] / IMAGE_SIZE;
+        _Output[id] = float4(x, y, z, 1);
+    }
 }

@@ -10,6 +10,8 @@ public sealed class Visualizer : MonoBehaviour
 
     [SerializeField] WebcamInput _webcam = null;
     [SerializeField] RawImage _previewUI = null;
+    [SerializeField] Text _scoreUI = null;
+    [SerializeField] Text _handednessUI = null;
     [Space]
     [SerializeField] ResourceSet _resources = null;
     [SerializeField] Shader _shader = null;
@@ -41,11 +43,13 @@ public sealed class Visualizer : MonoBehaviour
     {
         _detector.ProcessImage(_webcam.Texture);
         _previewUI.texture = _webcam.Texture;
+        _scoreUI.text = $"Score: {_detector.Score:0.00}";
+        _handednessUI.text = $"Handedness: {_detector.Handedness:0.00}";
     }
 
     void OnRenderObject()
     {
-        _material.SetBuffer("_Vertices", _detector.VertexBuffer);
+        _material.SetBuffer("_Vertices", _detector.OutputBuffer);
         _material.SetPass(0);
         Graphics.DrawProceduralNow
           (MeshTopology.Lines, 4, HandLandmarkDetector.VertexCount);
