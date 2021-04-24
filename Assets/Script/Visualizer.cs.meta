@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 17ae997b32df247a496cc3d4fe84a474
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _webcam: {instanceID: 0}
+  - _previewUI: {instanceID: 0}
+  - _resources: {fileID: 11400000, guid: 1edc0d74bd97543caa8c7f0a11b637f1, type: 2}
+  - _shader: {fileID: 4800000, guid: 67d50f035150647a3a538da64be936cd, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
