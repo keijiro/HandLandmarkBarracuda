@@ -11,6 +11,7 @@ public sealed partial class HandLandmarkDetector
 {
     #region Accessor properties
 
+    public const int ImageSize = 224;
     public const int VertexCount = 21;
 
     public ComputeBuffer OutputBuffer
@@ -33,7 +34,10 @@ public sealed partial class HandLandmarkDetector
       => DeallocateObjects();
 
     public void ProcessImage(Texture image)
-      => RunModel(image);
+      => RunModel(Preprocess(image));
+
+    public void ProcessImage(ComputeBuffer buffer)
+      => RunModel(buffer);
 
     #endregion
 

@@ -8,13 +8,6 @@ namespace MediaPipe.HandLandmark {
 //
 public sealed partial class HandLandmarkDetector : System.IDisposable
 {
-    #region Compile-time constants
-
-    // Input image size (defined by the model)
-    const int ImageSize = 224;
-
-    #endregion
-
     #region Private objects
 
     ResourceSet _resources;
@@ -46,16 +39,19 @@ public sealed partial class HandLandmarkDetector : System.IDisposable
 
     #region Neural network inference function
 
-    void RunModel(Texture source)
+    ComputeBuffer Preprocess(Texture source)
     {
-        // Preprocessing
         var pre = _resources.preprocess;
         pre.SetTexture(0, "_Texture", source);
         pre.SetBuffer(0, "_Tensor", _preBuffer);
         pre.Dispatch(0, ImageSize / 8, ImageSize / 8, 1);
+        return _preBuffer;
+    }
 
+    void RunModel(ComputeBuffer input)
+    {
         // Run the BlazeFace model.
-        using (var tensor = new Tensor(1, ImageSize, ImageSize, 3, _preBuffer))
+        using (var tensor = new Tensor(1, ImageSize, ImageSize, 3, input))
             _worker.Execute(tensor);
 
         // Postprocessing
