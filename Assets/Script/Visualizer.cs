@@ -1,19 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Klak.TestTools;
 using MediaPipe.HandLandmark;
-
-namespace MediaPipe {
 
 public sealed class Visualizer : MonoBehaviour
 {
     #region Editable attributes
 
-    [SerializeField] WebcamInput _webcam = null;
+    [SerializeField] ImageSource _source = null;
+    [SerializeField] ResourceSet _resources = null;
     [SerializeField] RawImage _previewUI = null;
     [SerializeField] Text _scoreUI = null;
     [SerializeField] Text _handednessUI = null;
-    [Space]
-    [SerializeField] ResourceSet _resources = null;
     [SerializeField] Shader _shader = null;
 
     #endregion
@@ -41,8 +39,8 @@ public sealed class Visualizer : MonoBehaviour
 
     void LateUpdate()
     {
-        _detector.ProcessImage(_webcam.Texture);
-        _previewUI.texture = _webcam.Texture;
+        _detector.ProcessImage(_source.Texture);
+        _previewUI.texture = _source.Texture;
         _scoreUI.text = $"Score: {_detector.Score:0.00}";
         _handednessUI.text = $"Handedness: {_detector.Handedness:0.00}";
     }
@@ -57,5 +55,3 @@ public sealed class Visualizer : MonoBehaviour
 
     #endregion
 }
-
-} // namespace MediaPipe

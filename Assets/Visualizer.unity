@@ -186,6 +186,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1602929248}
   m_RootOrder: 0
@@ -265,6 +266,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -297,6 +299,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1602929248}
   m_RootOrder: 2
@@ -357,7 +360,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1341825484}
-  - component: {fileID: 1341825483}
+  - component: {fileID: 1341825485}
   - component: {fileID: 1341825482}
   m_Layer: 0
   m_Name: Visualizer
@@ -378,27 +381,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17ae997b32df247a496cc3d4fe84a474, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _webcam: {fileID: 1341825483}
+  _source: {fileID: 1341825485}
+  _resources: {fileID: 11400000, guid: 1edc0d74bd97543caa8c7f0a11b637f1, type: 2}
   _previewUI: {fileID: 80368948}
   _scoreUI: {fileID: 1425750606}
   _handednessUI: {fileID: 942647561}
-  _resources: {fileID: 11400000, guid: 1edc0d74bd97543caa8c7f0a11b637f1, type: 2}
   _shader: {fileID: 4800000, guid: 67d50f035150647a3a538da64be936cd, type: 3}
---- !u!114 &1341825483
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1341825481}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 479699ae58cd245c38d1f859c0315d87, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _deviceName: 
-  _resolution: {x: 1080, y: 1080}
-  _dummyImage: {fileID: 2800000, guid: f99934cc02dc9430191e3d5a71d33bda, type: 3}
 --- !u!4 &1341825484
 Transform:
   m_ObjectHideFlags: 0
@@ -409,10 +397,34 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1341825485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1341825481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40ff2e515a81541cbb664860588e2c6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sourceType: 0
+  _texture: {fileID: 2800000, guid: f99934cc02dc9430191e3d5a71d33bda, type: 3}
+  _textureUrl: 
+  _video: {fileID: 0}
+  _videoUrl: 
+  _webcamName: 
+  _webcamResolution: {x: 1920, y: 1080}
+  _webcamFrameRate: 30
+  _outputTexture: {fileID: 0}
+  _outputResolution: {x: 1024, y: 1024}
+  _shader: {fileID: 4800000, guid: 3f7d8db4748f54c638a46cec0b0e61f8, type: 3}
 --- !u!1 &1425750604
 GameObject:
   m_ObjectHideFlags: 0
@@ -441,6 +453,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1602929248}
   m_RootOrder: 1
@@ -521,6 +534,7 @@ RectTransform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 80368950}
   - {fileID: 1425750605}
