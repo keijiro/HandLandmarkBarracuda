@@ -29,7 +29,7 @@ public sealed partial class HandLandmarkDetector : System.IDisposable
         _worker = model.CreateWorker(WorkerFactory.Device.GPU);
 
         // Preprocess
-        _preprocess = new ImagePreprocess(ImageSize, ImageSize);
+        _preprocess = new ImagePreprocess(ImageSize, ImageSize, nchwFix: true);
 
         // Output buffer
         _output = BufferUtil.NewStructured<Vector4>(VertexCount + 1);
