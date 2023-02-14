@@ -12,6 +12,9 @@ public sealed partial class HandLandmarkDetector
     public const int ImageSize = 224;
     public const int VertexCount = 21;
 
+    public ComputeBuffer InputBuffer
+      => _preprocess.Buffer;
+
     public GraphicsBuffer OutputBuffer
       => _output;
 
@@ -27,6 +30,9 @@ public sealed partial class HandLandmarkDetector
 
     public void Dispose()
       => DeallocateObjects();
+
+    public void ProcessInput()
+      => RunModel();
 
     public void ProcessImage(Texture image)
       => RunModel(image);

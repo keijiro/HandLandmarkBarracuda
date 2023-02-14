@@ -56,9 +56,12 @@ public sealed partial class HandLandmarkDetector : System.IDisposable
 
     void RunModel(Texture source)
     {
-        // Preprocessing
         _preprocess.Dispatch(source, _resources.preprocess);
+        RunModel();
+    }
 
+    void RunModel()
+    {
         // NN worker execution
         _worker.Execute(_preprocess.Tensor);
 
