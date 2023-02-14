@@ -1,5 +1,7 @@
 using Unity.Barracuda;
 using UnityEngine;
+using Klak.NNUtils;
+using Klak.NNUtils.Extensions;
 
 namespace MediaPipe.HandLandmark {
 
@@ -11,76 +13,65 @@ public sealed partial class HandLandmarkDetector : System.IDisposable
     #region Private objects
 
     ResourceSet _resources;
-    ComputeBuffer _preBuffer;
-    ComputeBuffer _postBuffer;
     IWorker _worker;
+    ImagePreprocess _preprocess;
+    GraphicsBuffer _output;
+    BufferReader<Vector4> _readCache;
 
-    void AllocateObjects()
+    void AllocateObjects(ResourceSet resources)
     {
+        _resources = resources;
+
+        // NN model
         var model = ModelLoader.Load(_resources.model);
-        _preBuffer = new ComputeBuffer(ImageSize * ImageSize * 3, sizeof(float));
-        _postBuffer = new ComputeBuffer(VertexCount + 1, sizeof(float) * 4);
-        _worker = model.CreateWorker();
+
+        // GPU worker
+        _worker = model.CreateWorker(WorkerFactory.Device.GPU);
+
+        // Preprocess
+        _preprocess = new ImagePreprocess(ImageSize, ImageSize);
+
+        // Output buffer
+        _output = BufferUtil.NewStructured<Vector4>(VertexCount + 1);
+
+        // Landmark data read cache
+        _readCache = new BufferReader<Vector4>(_output, VertexCount + 1);
     }
 
     void DeallocateObjects()
     {
-        _preBuffer?.Dispose();
-        _preBuffer = null;
-
-        _postBuffer?.Dispose();
-        _postBuffer = null;
-
         _worker?.Dispose();
         _worker = null;
+
+        _preprocess?.Dispose();
+        _preprocess = null;
+
+        _output?.Dispose();
+        _output = null;
     }
 
     #endregion
 
     #region Neural network inference function
 
-    ComputeBuffer Preprocess(Texture source)
+    void RunModel(Texture source)
     {
-        var pre = _resources.preprocess;
-        pre.SetTexture(0, "_Texture", source);
-        pre.SetBuffer(0, "_Tensor", _preBuffer);
-        pre.Dispatch(0, ImageSize / 8, ImageSize / 8, 1);
-        return _preBuffer;
-    }
+        // Preprocessing
+        _preprocess.Dispatch(source, _resources.preprocess);
 
-    void RunModel(ComputeBuffer input)
-    {
-        // Run the BlazeFace model.
-        using (var tensor = new Tensor(1, ImageSize, ImageSize, 3, input))
-            _worker.Execute(tensor);
+        // NN worker execution
+        _worker.Execute(_preprocess.Tensor);
 
         // Postprocessing
         var post = _resources.postprocess;
         post.SetBuffer(0, "_Landmark", _worker.PeekOutputBuffer("Identity"));
         post.SetBuffer(0, "_Score", _worker.PeekOutputBuffer("Identity_1"));
         post.SetBuffer(0, "_Handedness", _worker.PeekOutputBuffer("Identity_2"));
-        post.SetBuffer(0, "_Output", _postBuffer);
+        post.SetBuffer(0, "_Output", _output);
         post.Dispatch(0, 1, 1, 1);
 
-        // Read cache invalidation
-        _postRead = false;
-    }
-
-    #endregion
-
-    #region GPU to CPU readback
-
-    Vector4[] _postReadCache = new Vector4[VertexCount + 1];
-    bool _postRead;
-
-    Vector4[] PostReadCache
-      => _postRead ? _postReadCache : UpdatePostReadCache();
-
-    Vector4[] UpdatePostReadCache()
-    {
-        _postBuffer.GetData(_postReadCache, 0, 0, VertexCount + 1);
-        _postRead = true;
-        return _postReadCache;
+        // Cache data invalidation
+        _readCache.InvalidateCache();
     }
 
     #endregion

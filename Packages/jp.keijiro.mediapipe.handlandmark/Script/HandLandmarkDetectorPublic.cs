@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace MediaPipe.HandLandmark {
@@ -14,30 +12,24 @@ public sealed partial class HandLandmarkDetector
     public const int ImageSize = 224;
     public const int VertexCount = 21;
 
-    public ComputeBuffer OutputBuffer
-      => _postBuffer;
+    public GraphicsBuffer OutputBuffer
+      => _output;
 
-    public IEnumerable<Vector4> VertexArray
-      => PostReadCache.Skip(1);
+    public System.ReadOnlySpan<Vector4> VertexArray
+      => _readCache.Cached.Slice(1);
 
     #endregion
 
     #region Public methods
 
     public HandLandmarkDetector(ResourceSet resources)
-    {
-        _resources = resources;
-        AllocateObjects();
-    }
+      => AllocateObjects(resources);
 
     public void Dispose()
       => DeallocateObjects();
 
     public void ProcessImage(Texture image)
-      => RunModel(Preprocess(image));
-
-    public void ProcessImage(ComputeBuffer buffer)
-      => RunModel(buffer);
+      => RunModel(image);
 
     #endregion
 
@@ -54,17 +46,17 @@ public sealed partial class HandLandmarkDetector
     }
 
     public Vector2 GetKeyPoint(KeyPoint point)
-      => PostReadCache[(int)point + 1];
+      => _readCache.Cached[(int)point + 1];
 
     #endregion
 
     #region Optional properties
 
     public float Score
-      => PostReadCache[0].x;
+      => _readCache.Cached[0].x;
 
     public float Handedness
-      => PostReadCache[0].y;
+      => _readCache.Cached[0].y;
 
     #endregion
 }
