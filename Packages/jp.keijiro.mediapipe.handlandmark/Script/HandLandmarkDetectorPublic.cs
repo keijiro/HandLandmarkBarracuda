@@ -15,6 +15,9 @@ public sealed partial class HandLandmarkDetector
     public ComputeBuffer InputBuffer
       => _preprocess.Buffer;
 
+    public bool InputIsNCHW
+      => _preprocess.IsNCHW;
+
     public GraphicsBuffer OutputBuffer
       => _output;
 
