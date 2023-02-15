@@ -2,7 +2,7 @@
   "author": "Keijiro Takahashi",
   "dependencies": {
     "com.unity.barracuda": "3.0.0",
-    "jp.keijiro.klak.nnutils": "1.2.0"
+    "jp.keijiro.klak.nnutils": "1.3.0"
   },
   "description": "MediaPipe hand landmark detection neural network model for Unity Barracuda",
   "displayName": "MediaPipe Hand Landmark",
@@ -12,5 +12,5 @@
   "repository": "github:keijiro/HandLandmarkBarracuda",
   "unity": "2020.3",
   "unityRelease": "0f1",
-  "version": "2.1.0"
+  "version": "2.1.1"
 }
